@@ -26,6 +26,6 @@ public class Users {
 
     // This links the Journal Entries to the User
     @DBRef
-    @ToString.Exclude // <--- ADD THIS LINE
     private List<JournalEntry> journalEntries = new ArrayList<>();
+    private List<String> roles;
 }

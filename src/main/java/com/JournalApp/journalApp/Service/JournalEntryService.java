@@ -26,20 +26,22 @@ public class JournalEntryService {
     public void saveEntry(JournalEntry journalEntry, String userName) {
         try {
             Users user = userEntryService.getByName(userName).orElse(null);
-            if (user != null) {
-                journalEntry.setDate(LocalDate.now());
-                JournalEntry saved = journalEntryRepo.save(journalEntry);
 
-                user.getJournalEntries().add(saved);
-
-                // ⚠️ CRITICAL: Did you comment this out or delete it?
-                userEntryService.saveEntry(user);
-            } else {
-                // ⚠️ If user is null, the code does nothing but throws no error!
-                System.out.println("User not found: " + userName);
+            // FIX START: Check if user is null and THROW an exception
+            if (user == null) {
+                throw new RuntimeException("User not found with username: " + userName);
             }
+            // FIX END
+
+            journalEntry.setDate(LocalDate.now());
+            JournalEntry saved = journalEntryRepo.save(journalEntry);
+
+            user.getJournalEntries().add(saved);
+            userEntryService.saveEntry(user);
+
         } catch (Exception e) {
-            throw new RuntimeException("An error occurred", e);
+            // This ensures the controller knows something went wrong
+            throw new RuntimeException("An error occurred while saving the entry: " + e.getMessage(), e);
         }
     }
 

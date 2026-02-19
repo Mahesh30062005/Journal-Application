@@ -4,8 +4,10 @@ import com.JournalApp.journalApp.Entity.Users;
 import com.JournalApp.journalApp.Repository.UserEntryRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,9 +16,13 @@ public class UserEntryService {
 
     @Autowired
     private UserEntryRepo userEntryRepo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // RENAMED back to saveEntry to fix your error
     public void saveEntry(Users user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(Arrays.asList("Users"));
         userEntryRepo.save(user);
     }
 
